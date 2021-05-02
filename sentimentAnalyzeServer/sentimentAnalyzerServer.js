@@ -1,10 +1,12 @@
 const express = require('express');
+require('dotenv').config();
 const app = new express();
 
 app.use(express.static('client'))
 
 const cors_app = require('cors');
 app.use(cors_app());
+app.use(express.json())
 
 const getNLUInstance = () => {
     const api_key = process.env.API_KEY;
@@ -28,21 +30,72 @@ app.get("/",(req,res)=>{
     res.render('index.html');
 });
 
-app.get("/url/emotion", (req,res) => {
+app.get("/url/emotion", async (req,res) => {
+    const nluInstance = getNLUInstance();
 
-    return res.send({"happy":"90","sad":"10"});
+    let analyzeParams = {
+        "url": req.body.url,
+        "features": {
+            "emotion": {
+                "document": true
+            }
+        }
+    };
+
+    const response = await nluInstance.analyze(analyzeParams);
+
+    return res.send(response.result.emotion.document.emotion);
 });
 
-app.get("/url/sentiment", (req,res) => {
-    return res.send("url sentiment for "+req.query.url);
+app.get("/url/sentiment", async (req,res) => {
+    const nluInstance = getNLUInstance();
+
+    let analyzeParams = {
+        "url": req.body.url,
+        "features": {
+            "sentiment": {
+                "document": true
+            }
+        }
+    };
+
+    const response = await nluInstance.analyze(analyzeParams);
+
+    return res.send(response.result.sentiment.document);
 });
 
-app.get("/text/emotion", (req,res) => {
-    return res.send({"happy":"10","sad":"90"});
+app.get("/text/emotion", async (req,res) => {
+    const nluInstance = getNLUInstance();
+
+    let analyzeParams = {
+        "text": req.body.message,
+        "features": {
+            "emotion": {
+                "document": true
+            }
+        }
+    };
+
+    const response = await nluInstance.analyze(analyzeParams);
+
+    return res.send(response.result.emotion.document.emotion);
 });
 
-app.get("/text/sentiment", (req,res) => {
-    return res.send("text sentiment for "+req.query.text);
+app.get("/text/sentiment", async (req,res) => {
+    const nluInstance = getNLUInstance();
+
+    let analyzeParams = {
+        "text": req.body.message,
+        "features": {
+            "sentiment": {
+                "document": true
+            }
+        }
+    };
+
+    const response = await nluInstance.analyze(analyzeParams);
+
+    return res.send(response.result.sentiment.document);
 });
 
 let server = app.listen(8080, () => {
