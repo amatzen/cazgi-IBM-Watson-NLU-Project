@@ -34,7 +34,7 @@ app.get("/url/emotion", async (req,res) => {
     const nluInstance = getNLUInstance();
 
     let analyzeParams = {
-        "url": req.body.url,
+        "url": req.query.url,
         "features": {
             "emotion": {
                 "document": true
@@ -42,16 +42,19 @@ app.get("/url/emotion", async (req,res) => {
         }
     };
 
-    const response = await nluInstance.analyze(analyzeParams);
-
-    return res.send(response.result.emotion.document.emotion);
+    try {
+        const response = await nluInstance.analyze(analyzeParams);
+        return res.send(response.result.emotion.document.emotion);
+    } catch (e) {
+        return res.status(500).send(e);
+    }
 });
 
 app.get("/url/sentiment", async (req,res) => {
     const nluInstance = getNLUInstance();
 
     let analyzeParams = {
-        "url": req.body.url,
+        "url": req.query.url,
         "features": {
             "sentiment": {
                 "document": true
@@ -59,16 +62,19 @@ app.get("/url/sentiment", async (req,res) => {
         }
     };
 
-    const response = await nluInstance.analyze(analyzeParams);
-
-    return res.send(response.result.sentiment.document);
+    try {
+        const response = await nluInstance.analyze(analyzeParams);
+        return res.send(response.result.sentiment.document);
+    } catch (e) {
+        return res.status(500).send(e);
+    }
 });
 
 app.get("/text/emotion", async (req,res) => {
     const nluInstance = getNLUInstance();
 
     let analyzeParams = {
-        "text": req.body.message,
+        "text": req.query.text,
         "features": {
             "emotion": {
                 "document": true
@@ -76,16 +82,20 @@ app.get("/text/emotion", async (req,res) => {
         }
     };
 
-    const response = await nluInstance.analyze(analyzeParams);
+    try {
+        const response = await nluInstance.analyze(analyzeParams);
+        return res.send(response.result.emotion.document.emotion);
+    } catch (e) {
+        return res.status(500).send(e);
+    }
 
-    return res.send(response.result.emotion.document.emotion);
 });
 
 app.get("/text/sentiment", async (req,res) => {
     const nluInstance = getNLUInstance();
 
     let analyzeParams = {
-        "text": req.body.message,
+        "text": req.query.text,
         "features": {
             "sentiment": {
                 "document": true
@@ -93,9 +103,12 @@ app.get("/text/sentiment", async (req,res) => {
         }
     };
 
-    const response = await nluInstance.analyze(analyzeParams);
-
-    return res.send(response.result.sentiment.document);
+    try {
+        const response = await nluInstance.analyze(analyzeParams);
+        return res.send(response.result.sentiment.document);
+    } catch (e) {
+        return res.status(500).send(e);
+    }
 });
 
 let server = app.listen(8080, () => {
